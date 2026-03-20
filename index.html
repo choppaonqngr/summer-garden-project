@@ -50,6 +50,40 @@
 
         .fact-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 2.2rem; color: #D4AF37; margin-bottom: 1rem; }
         .fact-text { font-family: 'Caveat', cursive; font-size: 1.6rem; line-height: 1.4; color: #E2E8F0; }
+
+        @media (max-width: 768px) {
+            /* Уменьшаем заголовки в шапке */
+            .header h1 { font-size: 2.2rem; }
+            .header p { font-size: 1rem; }
+
+            /* Уменьшаем год над ползунком */
+            .year-display { font-size: 2.5rem; margin-bottom: 0.5rem; }
+
+            /* Уменьшаем блок с фактами, чтобы он помещался на экран */
+            .fact-box {
+                width: 95%; /* Делаем блок шире относительно маленького экрана */
+                padding: 1.5rem; /* Уменьшаем внутренние отступы */
+                top: 45%; /* Чуть смещаем вниз, чтобы не перекрывать год */
+            }
+            .fact-box.active { transform: translate(-50%, -50%); }
+
+            /* Уменьшаем шрифты внутри карточек фактов */
+            .fact-title { font-size: 1.8rem; margin-bottom: 0.5rem; }
+            .fact-text { font-size: 1.2rem; line-height: 1.3; }
+
+            /* Делаем сам ползунок чуть больше, чтобы по нему было легче попасть пальцем */
+            .slider::-webkit-slider-thumb { width: 35px; height: 35px; }
+            .slider-wrapper { padding: 1.5rem; width: 95%; bottom: 5%; }
+        }
+
+        /* --- Дополнительная адаптация для совсем маленьких экранов (меньше 480px) --- */
+        @media (max-width: 480px) {
+            .header h1 { font-size: 1.8rem; }
+            .year-display { font-size: 2rem; }
+            .fact-title { font-size: 1.5rem; }
+            .fact-text { font-size: 1.1rem; }
+            .slider-wrapper { padding: 1rem; bottom: 3%; }
+        }
     </style>
 </head>
 <body>
