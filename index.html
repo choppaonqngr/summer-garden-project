@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Машина времени: Летний сад</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Caveat:wght@500&family=Roboto:wght@300;400&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', sans-serif; background-color: #111; color: #ffffff; overflow-x: hidden; }
+
+        .header { text-align: center; padding: 2rem; position: absolute; top: 0; width: 100%; z-index: 10; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
+        .header h1 { font-family: 'Cormorant Garamond', serif;  font-style: italic; font-size: 3.5rem; letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+        .header h2 { font-family: 'Cormorant Garamond', serif;  font-style: italic; font-size: 1.1rem; opacity: 0.9; margin-top: 0.5rem; }
+        .header p { font-family: 'Cormorant Garamond', serif;  font-style: italic; font-size: 1.1rem; opacity: 0.9; margin-top: 0.5rem; }
+
+        .interactive-container { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+
+        /* Слои фонов (теперь их 5 и они плавно появляются) */
+        .bg-layer { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            object-fit: cover; opacity: 0; transition: opacity 0.8s ease-in-out; 
+            z-index: 1; 
+        }
+        .bg-layer.active { opacity: 1; z-index: 2; }
+
+        /* Темная накладка, чтобы текст был лучше виден */
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 3; pointer-events: none; }
+
+        /* Ползунок */
+        .slider-wrapper { position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%); width: 80%; max-width: 800px; z-index: 10; background: rgba(0,0,0,0.6); padding: 2rem; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+
+        .year-display { text-align: center; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 3.5rem; font-weight: bold; color: #e7c03d; margin-bottom: 1rem; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
+
+        .slider { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.3); outline: none; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 30px; height: 30px; border-radius: 50%; background: #D4AF37; cursor: pointer; box-shadow: 0 0 15px rgba(212, 175, 55, 0.8); transition: transform 0.1s; }
+        .slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+        /* Всплывающие факты */
+        .fact-box {
+            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
+            width: 90%; max-width: 650px; padding: 2.5rem;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px);
+            border-left: 4px solid #D4AF37; border-radius: 8px;
+            text-align: center; opacity: 0; transition: opacity 0.6s ease, transform 0.6s ease;
+            z-index: 5; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .fact-box.active { opacity: 1; transform: translate(-50%, -45%); pointer-events: auto; }
+
+        .fact-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 2.2rem; color: #D4AF37; margin-bottom: 1rem; }
+        .fact-text { font-family: 'Caveat', cursive; font-size: 1.6rem; line-height: 1.4; color: #E2E8F0; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Эволюция Летнего сада</h1>
+        <h2>5 этапов преображения: от шведской мызы до символа Империи</h2>
+        <p>Работу выполнили: Чуркин Кирилл, Дрыжак Тимофей, Куклин Станислав</p>
+    </div>
+
+    <div class="interactive-container">
+        <!-- 5 фонов для 5 фактов -->
+        <img src="first.jpg" class="bg-layer active" id="bg-0" alt="Этап 1">
+        <img src="third.jpg" class="bg-layer" id="bg-1" alt="Этап 2">
+        <img src="second.jpg" class="bg-layer" id="bg-2" alt="Этап 3">
+        <img src="fourth.jpg" class="bg-layer" id="bg-3" alt="Этап 4">
+        <img src="fifth.png" class="bg-layer" id="bg-4" alt="Этап 5">
+
+        <div class="overlay"></div>
+
+        <!-- Факты (5 этапов) -->
+        <div class="fact-box active" id="fact-0">
+            <div class="fact-title">1. Шведская мыза (до 1703)</div>
+            <div class="fact-text">До основания Петербурга на этом месте располагалась обжитая усадьба (мыза) шведского майора Эриха Берндта фон Конау. Здесь был небольшой дом, хозяйственный двор и скромный голландский садик у берега.</div>
+        </div>
+        <div class="fact-box" id="fact-1">
+            <div class="fact-title">2. Выбор Императора (1704)</div>
+            <div class="fact-text">Пётр I решает создать здесь свою резиденцию. Место выбрано не случайно: территория уже обжита, а близость рек позволяет легко подвозить материалы и строить водометы. Старые постройки идут под снос.</div>
+        </div>
+        <div class="fact-box" id="fact-2">
+            <div class="fact-title">3. Первые фонтаны (1705 - 1712)</div>
+            <div class="fact-text">Начинается масштабная перестройка. Прокладывают прямые аллеи. Безымянный ерик углубляют для питания первых в России фонтанов — так река получает название Фонтанка.</div>
+        </div>
+        <div class="fact-box" id="fact-3">
+            <div class="fact-title">4. Итальянский шик (1710-е)</div>
+            <div class="fact-text">В сад привозят десятки изысканных мраморных статуй из Венеции и Рима. Деревья строго подстригают в форме геометрических фигур (боскеты), следуя европейской моде на регулярные парки.</div>
+        </div>
+        <div class="fact-box" id="fact-4">
+            <div class="fact-title">5. Императорский сад (1720-е)</div>
+            <div class="fact-text">Построен Летний дворец. Частная усадьба превратилась в парадный центр молодой империи. Здесь проходят знаменитые петровские ассамблеи, балы и приемы иностранных послов.</div>
+        </div>
+
+        <!-- Управление -->
+        <div class="slider-wrapper">
+            <div class="year-display" id="year-display">1695 год</div>
+            <input type="range" min="0" max="100" value="0" class="slider" id="time-slider">
+        </div>
+    </div>
+
+    <script>
+        const slider = document.getElementById('time-slider');
+        const yearDisplay = document.getElementById('year-display');
+
+        // Массивы элементов фактов и фонов
+        const facts = [
+            document.getElementById('fact-0'),
+            document.getElementById('fact-1'),
+            document.getElementById('fact-2'),
+            document.getElementById('fact-3'),
+            document.getElementById('fact-4')
+        ];
+
+        const backgrounds = [
+            document.getElementById('bg-0'),
+            document.getElementById('bg-1'),
+            document.getElementById('bg-2'),
+            document.getElementById('bg-3'),
+            document.getElementById('bg-4')
+        ];
+
+        const startYear = 1695;
+        const endYear = 1725;
+
+        slider.addEventListener('input', (e) => {
+            const val = e.target.value;
+
+            // Вычисление года
+            const currentYear = Math.floor(startYear + (val / 100) * (endYear - startYear));
+            yearDisplay.textContent = currentYear + ' год';
+
+            // Определение активного индекса (каждые 20%)
+            let activeIndex = 0;
+            if (val < 20) activeIndex = 0;
+            else if (val < 40) activeIndex = 1;
+            else if (val < 60) activeIndex = 2;
+            else if (val < 80) activeIndex = 3;
+            else activeIndex = 4;
+
+            // Переключение фактов и фонов
+            for (let i = 0; i < 5; i++) {
+                if (i === activeIndex) {
+                    facts[i].classList.add('active');
+                    backgrounds[i].classList.add('active');
+                } else {
+                    facts[i].classList.remove('active');
+                    backgrounds[i].classList.remove('active');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
